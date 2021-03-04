@@ -2,6 +2,7 @@ package com.example.kafka.demo.web;
 
 import com.example.kafka.demo.enums.MessageChannel;
 import com.example.kafka.demo.listener.TestRequest;
+import com.example.kafka.demo.listener.TestResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -53,7 +54,7 @@ public class WebController {
             // get consumer record
             ConsumerRecord<String, Object> consumerRecord = sendAndReceive.get();
             // return consumer value
-            return consumerRecord.value();
+            return objectMapper.readValue( consumerRecord.value().toString(), TestResponse.class);
         }catch (Exception ex){
             log.error("发送异常{}", ExceptionUtil.stackTraceText(ex));
             return ExceptionUtil.stackTraceText(ex);
@@ -67,7 +68,7 @@ public class WebController {
         try{
             String channel = MessageChannel.TEST_REQUEST_1;
             TestRequest testRequest = new TestRequest();
-            testRequest.setRequestId("1000001");
+            testRequest.setRequestId("1000001-1");
             testRequest.setUrl("http://localhost/image");
             String valueJson = this.objectMapper.writeValueAsString(testRequest);
             // create producer record
@@ -86,7 +87,7 @@ public class WebController {
             // get consumer record
             ConsumerRecord<String, Object> consumerRecord = sendAndReceive.get();
             // return consumer value
-            return consumerRecord.value();
+            return objectMapper.readValue( consumerRecord.value().toString(), TestResponse.class);
         }catch (Exception ex){
             log.error("发送异常{}", ExceptionUtil.stackTraceText(ex));
             return ExceptionUtil.stackTraceText(ex);
